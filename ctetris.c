@@ -12,7 +12,7 @@ int rot;
 
 void creapezzo(pezzo *pz)
 {
-    int r = rand() % 2;
+    int r = rand() % 1;
 
     (*pz).rot = 0;      //reset della rotazione
     
@@ -101,12 +101,6 @@ void creapezzo(pezzo *pz)
         (*pz).x[3] = 6;
         (*pz).y[3] = 2;
     }
-    
-
-
-
-
-
 }
 
 void leggitasto(WINDOW *s, WINDOW *p, char *t)
@@ -125,6 +119,8 @@ void disegna(WINDOW *s, WINDOW *p, char mat[18][12], pezzo *pz)
         mvwaddch(s, (*pz).y[i], (*pz).x[i], (*pz).tipo);
         wrefresh(s);
         wrefresh(p);
+
+
     }
 }
 
@@ -146,7 +142,19 @@ void caduta(WINDOW *s, WINDOW *p, char mat[18][12], pezzo *pz)
             mvwaddch(s, (*pz).y[i], (*pz).x[i], (*pz).tipo);
             wrefresh(s);
         }        
-    }    
+    }
+
+    for (int i=17;i>1;i--)      //pulisci schermo
+    {
+        for (int j=10;j>1;j--)
+        {
+            if (mat[i][j] == 'O')
+            {
+                mat[i][j] = ' ';
+            }
+        }
+    }
+
 }
 
 void sinistra (WINDOW *s, WINDOW *p, char mat[18][12], pezzo *pz, char *t)
@@ -196,30 +204,33 @@ void destra (WINDOW *s, WINDOW *p, char mat[18][12], pezzo *pz, char *t)
 
 void linea(char mat[18][12], WINDOW *s)
 {
-    for (int i = 17;i>0;i--)
+    for (int k = 17;k>0;k--)
     {
         if
         (
-            mat[i][1] == 'X' && mat[i][2] == 'X' && mat[i][3] == 'X' &&
-            mat[i][4] == 'X' && mat[i][5] == 'X' && mat[i][6] == 'X' &&
-            mat[i][7] == 'X' && mat[i][8] == 'X' && mat[i][9] == 'X' &&
-            mat[i][10] == 'X' && mat[i][11] == 'X' && mat[i][12] == 'X'
+            mat[k][1] == 'X' && mat[k][2] == 'X' && mat[k][3] == 'X' &&
+            mat[k][4] == 'X' && mat[k][5] == 'X' && mat[k][6] == 'X' &&
+            mat[k][7] == 'X' && mat[k][8] == 'X' && mat[k][9] == 'X' &&
+            mat[k][10] == 'X' && mat[k][11] == 'X' && mat[k][12] == 'X'
         )
         {
-            for (int j = 10; j > 0; j--)
+            for (int i=k;i>1;i--)
             {
-                mvwaddch(s, i, j, mat[i-1][j]);
-                for (int k = 17; k > 0; k--)
+                for (int j=10;j>0;j--)
                 {
-                    mat[k][j] = mat[k-1][j];
+                    mat[i][j] = mat[i-1][j];
+                    mvwaddch(s,i,j,mat[i-1][j]);
                 }
             }
         }
     }
-    wrefresh(s);
+    box(s,0,0); 
 }
 
-
+void ruota()
+{
+    
+}
 
 
 
@@ -268,7 +279,7 @@ int main() {
     //l'assegnazione di questa matrice é tremenda. non ripetere a casa
 
     
-
+box(schermo,0,0); 
 
 
     pezzo p;
@@ -305,6 +316,8 @@ int main() {
         
 
 
+        
+        
         
 
 
