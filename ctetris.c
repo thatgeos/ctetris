@@ -10,9 +10,50 @@ char tipo;
 int rot;
 } pezzo;
 
+void ruota(pezzo*pz, char mat[18][12], char *t, WINDOW *s)
+{
+    if (*t == 'w' && (*pz).tipo != 'O')
+    {
+                                //la coordinata 2,2 è quella centrale
+        char tx[4];             //coordinate temporanee
+        char ty[4];
+
+
+        for (int i = 0;i < 4;i++)
+        {
+            if (i != 2)
+            {
+
+            int dx = (*pz).x[i] - (*pz).x[2];       //distanza orizzontale dal centro = x del pixel - x del centro
+            int dy = (*pz).y[i] - (*pz).y[2];
+
+            tx[i] = dy + (*pz).x[2];                //applicazione della matrice di rotazione [0  1]
+            ty[i] = (*pz).y[2] - dy;               //                                        [-1 0]
+
+
+            }
+        }
+
+        if (
+        mat[tx[0]][ty[0]] != 'X' &&
+        mat[tx[1]][ty[1]] != 'X' &&
+        mat[tx[2]][ty[2]] != 'X' &&
+        mat[tx[3]][ty[3]] != 'X')
+        {
+            for (int i = 0;i < 4;i++)
+            {
+                mvwaddch(s, (*pz).y[i], (*pz).x[i], ' ');
+                (*pz).x[i] = tx[i];
+                (*pz).y[i] = ty[i];
+                mvwaddch(s, (*pz).y[i], (*pz).x[i], (*pz).tipo);
+            }
+        }
+    }
+}
+
 void creapezzo(pezzo *pz)
 {
-    int r = rand() % 1;
+    int r = rand() % 7;
 
     (*pz).rot = 0;      //reset della rotazione
     
@@ -227,13 +268,6 @@ void linea(char mat[18][12], WINDOW *s)
     box(s,0,0); 
 }
 
-void ruota()
-{
-    
-}
-
-
-
 
 int main() {
 
@@ -290,6 +324,8 @@ box(schermo,0,0);
         linea(matrice, schermo);
 
         leggitasto(schermo, punteggio, &tasto);
+
+        ruota(&p, matrice, &tasto, schermo);
 
         disegna(schermo, punteggio, matrice, &p);
 
