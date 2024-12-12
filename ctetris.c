@@ -55,7 +55,11 @@ void creapezzo(pezzo *pz)
 {
     int r = rand() % 7;
 
+
+
     (*pz).rot = 0;      //reset della rotazione
+
+    
     
     
     if (r == 0)
@@ -243,8 +247,27 @@ void destra (WINDOW *s, WINDOW *p, char mat[18][12], pezzo *pz, char *t)
     }
 }
 
+void pulisci(char mat[18][12], WINDOW *s)
+{
+    for (int i = 0; i < 18; i++)
+    {
+        for (int j = 0; j < 12; j++)
+        {
+            if(mat[i][j] != 'X' && mat[i][j] != ' ')
+            {
+                mat[i][j] = ' ';
+                mvwaddch(s, i, j, ' ');
+                wrefresh(s);
+            }
+        }
+    }
+    
+}
+
 void linea(char mat[18][12], WINDOW *s)
 {
+    pulisci(mat, s);
+
     for (int k = 17;k>0;k--)
     {
         if
@@ -259,10 +282,15 @@ void linea(char mat[18][12], WINDOW *s)
             {
                 for (int j=10;j>0;j--)
                 {
-                    mat[i][j] = mat[i-1][j];
-                    mvwaddch(s,i,j,mat[i-1][j]);
+                    
+                    if(mat[i][j] == 'X')
+                    {
+                        mat[i][j] = mat[i-1][j];
+                        mvwaddch(s,i,j,mat[i-1][j]);
+                    }
                 }
             }
+            wrefresh(s);
         }
     }
     box(s,0,0); 
@@ -313,7 +341,7 @@ int main() {
     //l'assegnazione di questa matrice é tremenda. non ripetere a casa
 
     
-box(schermo,0,0); 
+    box(schermo,0,0); 
 
 
     pezzo p;
@@ -327,7 +355,7 @@ box(schermo,0,0);
 
         ruota(&p, matrice, &tasto, schermo);
 
-        disegna(schermo, punteggio, matrice, &p);
+        //disegna(schermo, punteggio, matrice, &p);
 
         caduta(schermo, punteggio, matrice, &p);
 
