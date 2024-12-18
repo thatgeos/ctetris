@@ -10,50 +10,9 @@ char tipo;
 int rot;
 } pezzo;
 
-void ruota(pezzo*pz, char mat[18][12], char *t, WINDOW *s)
-{
-    if (*t == 'w' && (*pz).tipo != 'O')
-    {
-                                //la coordinata 2,2 è quella centrale
-        char tx[4];             //coordinate temporanee
-        char ty[4];
-
-
-        for (int i = 0;i < 4;i++)
-        {
-            if (i != 2)
-            {
-
-            int dx = (*pz).x[i] - (*pz).x[2];       //distanza orizzontale dal centro = x del pixel - x del centro
-            int dy = (*pz).y[i] - (*pz).y[2];
-
-            tx[i] = dy + (*pz).x[2];                //applicazione della matrice di rotazione [0  1]
-            ty[i] = (*pz).y[2] - dy;               //                                        [-1 0]
-
-
-            }
-        }
-
-        if (
-        mat[tx[0]][ty[0]] != 'X' &&
-        mat[tx[1]][ty[1]] != 'X' &&
-        mat[tx[2]][ty[2]] != 'X' &&
-        mat[tx[3]][ty[3]] != 'X')
-        {
-            for (int i = 0;i < 4;i++)
-            {
-                mvwaddch(s, (*pz).y[i], (*pz).x[i], ' ');
-                (*pz).x[i] = tx[i];
-                (*pz).y[i] = ty[i];
-                mvwaddch(s, (*pz).y[i], (*pz).x[i], (*pz).tipo);
-            }
-        }
-    }
-}
-
 void creapezzo(pezzo *pz)
 {
-    int r = rand() % 7;
+    int r = 6;//rand() % 7;
 
 
 
@@ -156,16 +115,84 @@ void leggitasto(WINDOW *s, WINDOW *p, char *t)
     wrefresh(s);
 }
 
+void pulisci(char mat[18][12], WINDOW *s)
+{
+    for (int i = 0; i < 18; i++)
+    {
+        for (int j = 0; j < 12; j++)
+        {
+            if(mat[i][j] != 'X' && mat[i][j] != ' ')
+            {
+                mat[i][j] = ' ';
+                mvwaddch(s, i, j, ' ');
+                wrefresh(s);
+            }
+        }
+    }
+    
+}
+
 void disegna(WINDOW *s, WINDOW *p, char mat[18][12], pezzo *pz)
 {
+    pulisci(mat, s);
     for (int i = 0;i < 4; i+=1) // a quanto pare servono le parentesi per accedere ad uno struct puntato
     {
         mat[(*pz).y[i]][(*pz).x[i]] = (*pz).tipo;
         mvwaddch(s, (*pz).y[i], (*pz).x[i], (*pz).tipo);
         wrefresh(s);
         wrefresh(p);
+    }
+}
 
+void ruota(pezzo*pz, char mat[18][12], char *t, WINDOW *s)
+{
 
+    if(*t == 'w')
+    {
+        mvwaddch(s, (*pz).y[0], (*pz).x[0], ' ');
+        mvwaddch(s, (*pz).y[1], (*pz).x[1], ' ');
+        mvwaddch(s, (*pz).y[2], (*pz).x[2], ' ');
+        mvwaddch(s, (*pz).y[3], (*pz).x[3], ' ');
+
+        if ((*pz).tipo == 'T')
+        {
+            if((*pz).rot == 3)
+            {
+                (*pz).x[1] -= 1;
+                (*pz).x[2] -= 1;
+                (*pz).x[3] += 1;
+                (*pz).y[3] -= 1;
+                (*pz).rot = 0;
+            }
+            if((*pz).rot == 2)
+            {
+                (*pz).x[1] += 1;
+                (*pz).x[2] += 1;
+                (*pz).x[3] -= 1;
+                (*pz).y[3] += 1;
+                (*pz).rot = 3;
+            }            
+            if((*pz).rot == 1)
+            {
+                (*pz).x[3] += 1;
+                (*pz).y[3] -= 1;    
+                (*pz).rot = 2;
+            }
+            if((*pz).rot == 0)
+            {
+                (*pz).x[0] += 1;
+                (*pz).y[0] -= 1;
+                (*pz).x[1] -= 1;
+                (*pz).x[2] -= 1;
+                (*pz).rot = 1;
+            }
+            
+        }
+
+        mvwaddch(s, (*pz).y[0], (*pz).x[0], '0'); //(*pz).tipo);
+        mvwaddch(s, (*pz).y[1], (*pz).x[1], '1'); //(*pz).tipo);
+        mvwaddch(s, (*pz).y[2], (*pz).x[2], '2'); //(*pz).tipo);
+        mvwaddch(s, (*pz).y[3], (*pz).x[3], '3'); //(*pz).tipo);       
     }
 }
 
@@ -247,27 +274,31 @@ void destra (WINDOW *s, WINDOW *p, char mat[18][12], pezzo *pz, char *t)
     }
 }
 
-void pulisci(char mat[18][12], WINDOW *s)
+
+void giu (WINDOW *s, WINDOW *p, char mat[18][12], pezzo *pz, char *t)
 {
-    for (int i = 0; i < 18; i++)
+    if          
+    (
+    mat[(*pz).y[0]+1][(*pz).x[0]] != 'X' &&
+    mat[(*pz).y[1]+1][(*pz).x[1]] != 'X' &&
+    mat[(*pz).y[2]+1][(*pz).x[2]] != 'X' &&
+    mat[(*pz).y[3]+1][(*pz).x[3]] != 'X' &&
+    *t == 's'
+    )
     {
-        for (int j = 0; j < 12; j++)
+        for (int i=3;i>-1;i-=1)
         {
-            if(mat[i][j] != 'X' && mat[i][j] != ' ')
-            {
-                mat[i][j] = ' ';
-                mvwaddch(s, i, j, ' ');
-                wrefresh(s);
-            }
-        }
+            mat[(*pz).y[i]][(*pz).x[i]] = mat[(*pz).y[i-1]][(*pz).x[i]];
+            mvwaddch(s, (*pz).y[i], (*pz).x[i], ' ');
+            (*pz).y[i] +=1;
+            mvwaddch(s, (*pz).y[i], (*pz).x[i], (*pz).tipo);
+            wrefresh(s);
+        }        
     }
-    
 }
 
 void linea(char mat[18][12], WINDOW *s)
 {
-    pulisci(mat, s);
-
     for (int k = 17;k>0;k--)
     {
         if
@@ -355,13 +386,15 @@ int main() {
 
         ruota(&p, matrice, &tasto, schermo);
 
-        //disegna(schermo, punteggio, matrice, &p);
+        disegna(schermo, punteggio, matrice, &p);
 
-        caduta(schermo, punteggio, matrice, &p);
+        //caduta(schermo, punteggio, matrice, &p);
 
         sinistra(schermo, punteggio, matrice, &p, &tasto);
 
         destra(schermo, punteggio, matrice, &p, &tasto);
+
+        giu(schermo, punteggio, matrice, &p, &tasto);
 
         if
         (

@@ -35,7 +35,7 @@
       "stopAtEntry": true,
       "externalConsole": true,
       "cwd": "/home/marcy/ctetris/ctetris-1",
-      "program": "/home/marcy/ctetris/ctetris-1/build/Debug/outDebug",
+      "program": "/home/marcy/ctetris/ctetris",
       "MIMode": "gdb",
       "miDebuggerPath": "gdb",
       "setupCommands": [
